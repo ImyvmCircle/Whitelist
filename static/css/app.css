@@ -1,0 +1,104 @@
+@media screen and (min-width: 992px) {
+.nav-item + .nav-item {
+    margin-left: 12px;
+}
+
+nav.navbar {
+    height: 72px;
+    font-size: 18px;
+}
+
+#navbarText > ul {
+    margin-left: calc(50vw - 523px) !important;
+    width: 920px;
+}
+}
+
+.navbar-brand {
+    line-height: 40px;
+}
+
+.adapt-form__input-field {
+    margin: 8px 0;
+}
+
+.adapt-form__text-label {
+    font-size: 1.2rem;
+    margin-top: 15px;
+}
+
+.required_hidden_field {
+    height: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+}
+
+.mdc-form-field > label {
+    margin-bottom: 0;
+}
+
+.required_hidden_field > input {
+    position: absolute !important;
+    bottom: 5px;
+    left: 80px;
+    padding: 0.5px 0.5px 0 0 !important;
+    width: 0;
+}
+
+.form_field_item > .line {
+    height: 42px;
+}
+
+.low_field {
+    height: 40px !important;
+    bottom: -10px;
+}
+
+.low_field > input {
+    padding: 4px 12px 4px;
+}
+
+.mdc-text-field {
+    width: 50%;
+}
+
+.form_field_item + .form_field_item {
+    margin-top: 24px;
+}
+
+.adapt-form__text-label + .mdc-text-field {
+    margin-top: 5px;
+}
+
+.adapt-form__input-field {
+    width: 80%;
+}
+
+@media screen and (min-width: 992px) {
+.adapt-form__input-field {
+    width: 50%;
+}
+}
+
+.container {
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
+.mdc-typography--caption {
+    margin-bottom: 5px;
+}
+
+.long_input-field {
+    width: 80%;
+    margin: 8px 0;
+}
+
+.radio_label {
+    margin-bottom: 0;
+}
+
+a {
+    color: #0d8528;
+}
+

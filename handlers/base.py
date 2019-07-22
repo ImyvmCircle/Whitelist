@@ -3,10 +3,12 @@ import logging
 import tornado.web
 import time
 import traceback
-from typing import Any
+from typing import Any, Optional
 
 from logconfig import log_request
-from handlers.utils import APIMissingParams, APIBadRequest, APIError
+from handlers.utils import APIMissingParams, APIBadRequest, APIError,\
+    get_session_user
+from orm.models import User
 
 
 logger = logging.getLogger('whitelist.' + __name__)
@@ -32,6 +34,9 @@ class BaseHandler(tornado.web.RequestHandler):
             logger.debug(msg)
             raise APIBadRequest(msg)
 
+    def get_current_user(self) -> Optional[User]:
+        return get_session_user(self)
+
     def get_json_argument(self, name, default=None):
         """Find and return the argument with key 'name' from JSON request data.
         Similar to Tornado's get_argument() method.
@@ -56,14 +61,17 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def write_error(self, status_code: int, **kwargs: Any):
         if 'exc_info' in kwargs:
-            if self.settings.get('serve_traceback'):
+            logger.error(f"Exception caught:\n{traceback.format_exc()}")
+            send_traceback = self.settings.get('serve_traceback', False) and\
+                             'json' not in self.request.headers.get('Accept', '')
+            if send_traceback:
                 self.set_header('Content-Type', "text/plain")
-                for line in traceback.format_exception(*kwargs["exc_info"]):
+                for line in traceback.format_exception(*kwargs['exc_info']):
                     self.write(line)
                 self.write("\nResponse body:\n")
             exception = kwargs['exc_info'][1]
             if isinstance(exception, APIError):
-                if not self.settings.get('serve_traceback'):
+                if not send_traceback:
                     self.set_header('Content-Type', "application/json")
                 self.write(exception.log_message)
             self.finish()

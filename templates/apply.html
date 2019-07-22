@@ -1,0 +1,315 @@
+{% extends "base.html" %}
+
+{% block title %}Apply{% end %}
+
+{% block stylesheet %}
+<style>
+.applyContainer {
+    border-radius: 8px;
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 40px;
+}
+
+.submit_button {
+    margin-top: 32px;
+}
+</style>
+{% end %}
+
+{% block content %}
+
+{% import hashlib %}
+
+<div class="applyContainer mdc-elevation--z5">
+    <h2>竹萌白名单申请</h2>
+    <form id="apply_form">
+        {% for field in meta %}
+
+        {% set is_required = field.get('required', False) %}
+        {% set required_attr = 'required' if is_required else '' %}
+        {% set required_star = '*' if is_required else '' %}
+
+        <div class="form_field_item">
+
+            <div class="adapt-form__text-label">{{ field.get('name') }}{{ required_star }}</div>
+            {% if field.get('description') and field['type'] != 'text' %}
+                <p class="mdc-typography--caption">{% raw field.get('description') %}</p>
+            {% end %}
+            {% if field['type'] == 'radio' %}
+                <!-- Radio field -->
+                {% if is_required %}
+                    <div class="mdc-text-field mdc-text-field--outlined required_hidden_field">
+                        <input id="{{ 'hold-' + field.get('key') }}" type="text" required class="mdc-text-field__input">
+                    </div>
+                {% end %}
+                {% for item in field['options'] %}
+                    {% set hash_id = 'radio-' + hashlib.sha1((field['key'] + item).encode()).hexdigest()[:8] %}
+                    <div class="mdc-form-field">
+                        <div class="mdc-radio">
+                            <input class="mdc-radio__native-control" type="radio" id="{{ hash_id }}" name="{{ field['key'] }}" value="{{ item }}">
+                            <div class="mdc-radio__background">
+                                <div class="mdc-radio__outer-circle"></div>
+                                <div class="mdc-radio__inner-circle"></div>
+                            </div>
+                        </div>
+                        <label class="radio_label" for="{{ hash_id }}">{{ item }}</label>
+                    </div>
+                {% end %}
+                {% if field.get('has_other') %}
+                {% end %}
+            {% elif field['type'] == 'text' %}
+                <!-- Input field -->
+                <div class="mdc-text-field mdc-text-field--outlined adapt-form__input-field">
+                    <input
+                            type="text"
+                            name="{{ field.get('key') }}"
+                            id="{{ field.get('key') }}-text-field"
+                            class="mdc-text-field__input"
+
+                            {{ required_attr }}
+
+                            {% if field.get('validate') %}
+                                pattern="{{ field['validate'] }}"
+                            {% end %}
+
+                            {% if field.get('placeholder') %}
+                                placeholder="{{ field['placeholder'] }}"
+                            {% end %}
+
+                            {% if field.get('message') %}
+                                title="{{ field['message'] }}"
+                                oninvalid="this.setCustomValidity('{{ field['message'] }}');"
+                                onchange="this.setCustomValidity('');"
+                            {% end %}
+                    >
+                    <div class="mdc-notched-outline">
+                      <div class="mdc-notched-outline__leading"></div>
+                      <div class="mdc-notched-outline__notch">
+                        <label class="mdc-floating-label">{{ field.get('key').replace('_', ' ').upper() }}</label>
+                      </div>
+                      <div class="mdc-notched-outline__trailing"></div>
+                    </div>
+                </div>
+                {% if field.get('description') %}
+                    <div class="mdc-text-field-helper-line">
+                        <div id="username-helper-text" class="mdc-text-field-helper-text" aria-hidden="true">
+                            {{ field.get('description') }}
+                        </div>
+                    </div>
+                {% end %}
+            {% elif field['type'] == 'multiselect' %}
+                <!-- Multi-select field -->
+                {% if is_required %}
+                    <div class="mdc-text-field mdc-text-field--outlined required_hidden_field">
+                        <input id="{{ 'hold-' + field.get('key') }}" type="text" required class="mdc-text-field__input">
+                    </div>
+                {% end %}
+                {% for item in field['options'] %}
+                    {% set hash_id = 'radio-' + hashlib.sha1((field['key'] + item).encode()).hexdigest()[:8] %}
+                    {% set name = 'multicheckbox-' + field['key'] + '-' + item %}
+                    <div>
+                        <div class="mdc-form-field">
+                            <div class="mdc-checkbox">
+                                <input type="checkbox" name="{{ name }}" class="mdc-checkbox__native-control" id="{{ name }}"/>
+                                <div class="mdc-checkbox__background">
+                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+                                    </svg>
+                                    <div class="mdc-checkbox__mixedmark"></div>
+                                </div>
+                            </div>
+                            <label for="{{ name }}">{{ item }}</label>
+                        </div>
+                    </div>
+                {% end %}
+                {% if field.get('has_other') %}
+                    {% set hash_id = 'radio-' + hashlib.sha1((field['key'] + '其他').encode()).hexdigest()[:8] %}
+                    {% set name = 'multicheckbox-' + field['key'] + '-' + '其他' %}
+                    <div class="line">
+                        <div class="mdc-form-field">
+                            <div class="mdc-checkbox">
+                                <input type="checkbox" name="{{ name }}" class="mdc-checkbox__native-control" id="{{ name }}"/>
+                                <div class="mdc-checkbox__background">
+                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+                                    </svg>
+                                    <div class="mdc-checkbox__mixedmark"></div>
+                                </div>
+                            </div>
+                            <label for="{{ name }}">其他</label>
+                        </div>
+                        <span style="display: none;">
+                            ：
+                            <div class="mdc-text-field mdc-text-field--filled low_field">
+                                <input id="{{ 'otherinp-' + field['key'] }}" type="text" class="mdc-text-field__input">
+                                <div class="mdc-line-ripple"></div>
+                            </div>
+                        </span>
+                    </div>
+                {% end %}
+            {% else %}
+                Not rendered (type: <code>{{ field['type'] }}</code>)
+            {% end %}
+        </div>
+
+        {% end %}
+
+        <div>
+            <button type="submit" class="mdc-button mdc-button--raised mdc-button__label mdc-ripple-upgraded submit_button">提交</button>
+        </div>
+    </form>
+</div>
+
+<div class="mdc-dialog"
+     role="alertdialog"
+     aria-modal="true"
+     aria-labelledby="提交成功"
+     aria-describedby="您的申请我们已经收到，请耐心等待审核">
+    <div class="mdc-dialog__container">
+        <div class="mdc-dialog__surface">
+            <h2 class="mdc-dialog__title">提交成功</h2>
+            <div class="mdc-dialog__content">
+                您的申请我们已经收到，请耐心等待审核，
+                <br>
+                审核结果我们将会通过邮箱通知您。
+                <br>
+                在等候的过程中，你可以：
+                <ul style="padding-left: 20px;">
+                    <li>阅读<a href="https://wiki.imyvm.com/">竹萌 wiki</a></li>
+                    <li>申请加入 QQ 群：170988020</li>
+                    <li>加入竹萌 Discord：<a href="https://discord.gg/GR68dwg">GR68dwg</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+
+{% block script %}
+<script src="https://www.recaptcha.net/recaptcha/api.js?render=6Lc1ka0UAAAAALRAI8eVDUnnaEUptaLftx_xCg5A"></script>
+
+<script>
+document.querySelectorAll(".mdc-text-field-helper-text").forEach(function(elem) {
+    new mdc.textField.MDCTextFieldHelperText(elem);
+});
+
+(function() {
+    var dialog = new mdc.dialog.MDCDialog(document.querySelector(".mdc-dialog"));
+    // dialog.open();
+
+    var multiple_set_count = {};
+
+    $("input[type='checkbox']").filter(function(index, elem) {
+        return elem.name.startsWith("multicheckbox-");
+    }).on('change', function(e) {
+        var elem = e.target;
+        var key = elem.name.split('-')[1];
+        multiple_set_count[key] = multiple_set_count[key] || 0;
+        multiple_set_count[key] += $(elem).is(":checked") ? 1 : -1;
+        if (multiple_set_count[key] === 0) {
+            $("#hold-" + key).attr("required", "required");
+        } else {
+            $("#hold-" + key).removeAttr("required");
+        }
+    });
+
+    $("input[type='checkbox']").filter(function(index, elem) {
+        return elem.name.endsWith("-其他");
+    }).on('change', function(e) {
+        var elem = e.target;
+        var key = elem.name.split('-')[1];
+        var value = $(elem).is(":checked");
+
+        var input = $("#otherinp-" + key);
+        input.parent().parent().css("display", value ? "unset" : "none");
+        if (value) {
+            input.attr("required", "required");
+        } else {
+            input.removeAttr("required");
+        }
+    });
+
+    $("input[type='radio']").filter(function(index, elem) {
+        return elem.id.startsWith("radio-");
+    }).on('change', function(e) {
+        var elem = e.target;
+        var key = elem.name;
+        $("#hold-" + key).removeAttr("required");
+    });
+
+
+    function getCookie(name) {
+        var value = "; " + document.cookie;
+        var parts = value.split("; " + name + "=");
+        if (parts.length === 2)
+            return parts.pop().split(";").shift();
+    }
+
+    function deal_multiple_select(data) {
+        var result = [];
+        var multiple_map = {};
+
+        data.forEach(function(field) {
+            if (field.name.startsWith("multicheckbox")) {
+                var key = field.name.split('-')[1];
+                var value = field.name.split('-')[2];
+                if (value !== "其他") {
+                    multiple_map[key] = multiple_map[key] || [];
+                    multiple_map[key].push(value);
+                }
+            }
+            else {
+                result.push(field);
+            }
+        });
+
+        $("input[type='text']").filter(function(index, elem) {
+            return elem.id.startsWith("otherinp-") && $(elem).attr("required") !== undefined;
+        }).each(function(index, elem) {
+            var key = elem.id.split("-")[1];
+            var value = elem.value;
+            multiple_map[key] = multiple_map[key] || [];
+            multiple_map[key].push(value);
+        });
+
+        for (var key in multiple_map) {
+            result.push({
+                name: key,
+                value: multiple_map[key]
+            });
+        }
+
+        return result;
+    }
+
+    $("#apply_form").submit(function (event) {
+        // $("button[type='submit']").attr("disabled", "disabled");
+        event.preventDefault();
+        var formdata = JSON.stringify(deal_multiple_select($(this).serializeArray()));
+
+        grecaptcha.execute('6Lc1ka0UAAAAALRAI8eVDUnnaEUptaLftx_xCg5A', { action: 'apply' }).then(function(token) {
+            $.ajax({
+                url: "/apply",
+                type: "POST",
+                data: {
+                    data: formdata,
+                    _xsrf: getCookie("_xsrf"),
+                    token: token
+                },
+                success: function (data) {
+                    // $("button[type='submit']").removeAttr("disabled");
+                    console.log(data);
+                    if (data === "Success") {
+                        dialog.open();
+                    }
+                },
+                error: function () {
+                    // $("button[type='submit']").removeAttr("disabled");
+                }
+            });
+        });
+    });
+})();
+</script>
+{% end %}

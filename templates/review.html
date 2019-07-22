@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Review{% end %}
+
+{% block stylesheet %}
+<style>
+.cardContainer {
+    border-radius: 8px;
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 30px;
+}
+
+.card-header {
+    padding: 0;
+}
+
+.card-header .btn {
+    padding: .75rem 1.25rem;
+}
+
+button.btn[data-toggle="collapse"] {
+    width: 100%;
+    text-align: left;
+    font-size: 16px;
+}
+
+.float-to-right {
+    float: right;
+}
+
+.float-to-right .content {
+    font-size: 18px;
+}
+
+.two-row-left {
+    align-self: stretch;
+    width: 30%;
+    text-align: right;
+    padding: 5px 8px 5px 0;
+}
+
+.two-row-right {
+    padding: 5px 0 5px 0;
+    align-self: stretch;
+}
+
+.mdc-list-item {
+    height: auto;
+    min-height: 36px;
+}
+
+.force_enable {
+    background-color: var(--mdc-theme-primary, #6200ee);
+    border-color: var(--mdc-theme-primary, #6200ee);
+}
+
+.force_enable svg {
+    opacity: 1;
+}
+
+.force_enable path {
+    stroke-dashoffset: 1;
+}
+
+button.danger.mdc-button {
+    border-color: var(--red, red);
+    color: var(--red, red);
+}
+
+</style>
+{% end %}
+
+{% block content %}
+{% import datetime %}
+<div class="cardContainer mdc-elevation--z5">
+    <h2>待审核申请</h2>
+    <div class="accordion" id="accordion">
+        {% for player in players %}
+        {% set header_id = 'card_header_' + str(player.id) %}
+        {% set content_id = 'card_content_' + str(player.id) %}
+
+        <div class="card">
+            <div class="card-header" id="{{ header_id }}">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#{{ content_id }}">
+                        {{ player.minecraft_id }}
+                    </button>
+                </h2>
+            </div>
+            <div id="{{ content_id }}" class="collapse" data-target="#{{ header_id }}" aria-expanded="false" aria-controls="{{ header_id }}">
+                <div class="card-body">
+                    <ul class="mdc-list mdc-list--non-interactive">
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">Minecraft ID：</div>
+                            <div class="two-row-right">{{ player.minecraft_id }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">邮箱：</div>
+                            <div class="two-row-right">{{ player.email }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">申请时间：</div>
+                            <div class="two-row-right">{{ datetime.datetime.fromtimestamp(player.apply_time).strftime("%Y-%m-%d %H:%M") }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">昵称：</div>
+                            <div class="two-row-right">{{ player.nickname or "无" }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">介绍：</div>
+                            <div class="two-row-right">{{ player.introduction or "无" }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">性别：</div>
+                            <div class="two-row-right">{{ player.gender }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">座右铭：</div>
+                            <div class="two-row-right">{{ player.motto or "无" }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">年龄：</div>
+                            <div class="two-row-right">{{ datetime.datetime.now().year - player.birth_year }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">接触 Minecraft 的时间：</div>
+                            <div class="two-row-right">{{ player.minecraft_join_time // 12 }}-{{ player.minecraft_join_time % 12 + 1 }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">想做的事：</div>
+                            <div class="two-row-right">
+                                {% set things = player.things_todo.split(":;:") %}
+                                {{ things[0] }}
+                                {% for thing in things[1:] %}
+                                    <br>{{ thing }}
+                                {% end %}
+                            </div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">擅长：</div>
+                            <div class="two-row-right">
+                                {% set things = player.good_at.split(":;:") %}
+                                {{ things[0] }}
+                                {% for thing in things[1:] %}
+                                    <br>{{ thing }}
+                                {% end %}
+                            </div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">是否常驻：</div>
+                            <div class="two-row-right">
+                                <div class="mdc-checkbox__background {{ 'force_enable' if player.resident else '' }}">
+                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">是否愿意捐赠：</div>
+                            <div class="two-row-right">
+                                <div class="mdc-checkbox__background {{ 'force_enable' if player.want_donate else '' }}">
+                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">是否在同时申请多个：</div>
+                            <div class="two-row-right">
+                                <div class="mdc-checkbox__background {{ 'force_enable' if player.apply_more else '' }}">
+                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">是否曾经被 ban：</div>
+                            <div class="two-row-right">
+                                <div class="mdc-checkbox__background {{ 'force_enable' if player.is_bad else '' }}">
+                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">是否有管理经验：</div>
+                            <div class="two-row-right">
+                                <div class="mdc-checkbox__background {{ 'force_enable' if player.manage_exp else '' }}">
+                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">推荐人：</div>
+                            <div class="two-row-right">{{ player.referrer_person or "无" }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">得知竹萌的地方：</div>
+                            <div class="two-row-right">{{ player.referrer_web }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">是否顶帖：</div>
+                            <div class="two-row-right">
+                                <div class="mdc-checkbox__background {{ 'force_enable' if player.praise_post else '' }}">
+                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">
+                                <button class="mdc-button mdc-button--outlined danger" onclick="set_review_result({{ player.id }}, 2)">
+                                    <span class="mdc-button__label">Refuse</span>
+                                </button>
+                            </div>
+                            <div class="two-row-right">
+                                <button class="mdc-button mdc-button--outlined" onclick="set_review_result({{ player.id }}, 1)">
+                                    <span class="mdc-button__label">Accept</span>
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% end %}
+    </div>
+</div>
+{% end %}
+
+{% block script %}
+<script>
+function set_review_result(id, result) {
+    $.ajax({
+        url: "/review/set_result",
+        type: "POST",
+        data: {
+            id: id,
+            result: result,
+            _xsrf: getCookie("_xsrf")
+        },
+        success: function(resp) {
+            $("#card_content_" + id).collapse("hide");
+            $("#card_header_" + id + " .btn")[0].innerHTML += (result === 1 ? "Accepted" : "Refused");
+        },
+        error: function(xhr) {
+            alert(xhr.status + " " + xhr.statusText);
+        }
+    });
+}
+</script>
+{% end %}
