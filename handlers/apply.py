@@ -8,6 +8,11 @@ import tortoise
 from handlers.base import BaseHandler
 from handlers.utils.recaptcha import verify_recaptcha_with_dynamic_score
 from orm.models import Player
+from settings import smtp_settings
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+import handlers.mail as mail
 
 
 logger = logging.getLogger('whitelist.' + __name__)
@@ -238,5 +243,13 @@ class ApplyHandle(BaseHandler):
             else:
                 raise
             return
-
         self.write("Success")
+        if send_copy == "是":
+            mailserver = mail.mailSender(smtp_settings['mail_host'], smtp_settings['mail_user'], smtp_settings['mail_pass'])
+            title = "IMYVM 竹萌 白名单申请回执"
+            msg = MIMEMultipart()
+            file1 = MIMEText(json.dumps(data, ensure_ascii=False), 'base64', 'utf-8')
+            file1["Content-Type"] = 'application/octet-stream'
+            file1["Content-Disposition"] = 'attachment; filename="apply.json"'
+            msg.attach(file1)
+            mailserver.sendmail(player.email, msg, title, player.minecraft_id)
