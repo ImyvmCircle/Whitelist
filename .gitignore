@@ -8,3 +8,7 @@ htmlcov/
 .coverage
 .coverage.*
 nosetests.xml
+
+.env
+settings.py
+.vscode
