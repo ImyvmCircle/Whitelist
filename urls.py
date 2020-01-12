@@ -15,6 +15,6 @@ url_patterns = (
     (URL_ROOT + r"/review", ReviewPageHandle),
     (URL_ROOT + r"/review/set_result", ReviewResultHandle),
     # (URL_ROOT + r"/review/render/(\d+)", ReviewPieceHandle),
-    (URL_ROOT + r"/apply", ApplyHandle),
+    (URL_ROOT + r"/", ApplyHandle),
     (URL_ROOT + r"/static/(.*)", StaticFileHandler, {'path': settings.tornado_settings['static_path']})
 )

@@ -290,7 +290,7 @@ document.querySelectorAll(".mdc-text-field-helper-text").forEach(function(elem) 
 
         grecaptcha.execute('6Lc1ka0UAAAAALRAI8eVDUnnaEUptaLftx_xCg5A', { action: 'apply' }).then(function(token) {
             $.ajax({
-                url: "/apply",
+                url: "/",
                 type: "POST",
                 data: {
                     data: formdata,
@@ -300,6 +300,9 @@ document.querySelectorAll(".mdc-text-field-helper-text").forEach(function(elem) 
                 success: function (data) {
                     // $("button[type='submit']").removeAttr("disabled");
                     console.log(data);
+                    if (data === "请不要提交两次哟") {
+                        alert('你已经提交过一次了，请耐心等待审核！');
+                    }
                     if (data === "Success") {
                         dialog.open();
                     }
