@@ -27,14 +27,28 @@
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="https://imyvm.com">主页</a>
+                    <a class="nav-link" href="https://imyvm.org">主页</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="https://discuss.imyvm.com">竹萌的后花园</a>
+                    <a class="nav-link" href="https://discuss.imyvm.org">竹萌的后花园</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="https://wiki.imyvm.com">竹萌百科</a>
+                    <a class="nav-link" href="https://wiki.imyvm.org">竹萌百科</a>
                 </li>
+                {% if handler.current_user is not None %}
+                <li class="nav-item">
+                    <a class="nav-link" href="https://apply.imyvm.org/review"><b>待审核</b></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://apply.imyvm.org/passed"><b>已通过</b></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://apply.imyvm.org/refused"><b>未通过</b></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="https://apply.imyvm.org/banned"><b>已封禁</b></a>
+                </li>
+                {% end %}
             </ul>
         </div>
         {% if handler.current_user is not None %}

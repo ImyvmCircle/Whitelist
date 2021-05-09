@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Passed{% end %}
+{% block title %}Refused{% end %}
 
 {% block stylesheet %}
 <style>
@@ -85,7 +85,7 @@ button.danger.mdc-button {
 {% block content %}
 {% import datetime %}
 <div class="cardContainer mdc-elevation--z5">
-    <h2>已通过名单</h2>
+    <h2>未通过名单</h2>
     <div class="accordion" id="accordion">
         {% for player in players %}
         {% set header_id = 'card_header_' + str(player.id) %}
@@ -216,31 +216,6 @@ button.danger.mdc-button {
                             <div class="two-row-left">得知竹萌的地方：</div>
                             <div class="two-row-right">{{ player.referrer_web }}</div>
                         </li>
-                        <li class="mdc-list-item">
-                            <div class="two-row-left">
-                                <button class="mdc-button mdc-button--outlined danger" onclick="set_passed_result({{ player.id }}, 3)">
-                                    <span class="mdc-button__label">Ban</span>
-                                </button>
-                            </div>
-                            <div class="two-row-right">
-                                <div class="mdc-text-field mdc-text-field--outlined adapt-form__input-field">
-                                    <input
-                                            type="text"
-                                            name="Ban reason"
-                                            id={{ player.id }}
-                                            class="mdc-text-field__input"
-                
-                                    >
-                                    <div class="mdc-notched-outline">
-                                      <div class="mdc-notched-outline__leading"></div>
-                                      <div class="mdc-notched-outline__notch">
-                                        <label class="mdc-floating-label">Ban reason</label>
-                                      </div>
-                                      <div class="mdc-notched-outline__trailing"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -248,29 +223,4 @@ button.danger.mdc-button {
         {% end %}
     </div>
 </div>
-{% end %}
-
-{% block script %}
-<script>
-function set_passed_result(id, result) {
-    var reason = document.getElementById(id).value;
-    $.ajax({
-        url: "/passed/set_result",
-        type: "POST",
-        data: {
-            id: id,
-            reason: reason,
-            result: result,
-            _xsrf: getCookie("_xsrf")
-        },
-        success: function(resp) {
-            $("#card_content_" + id).collapse("hide");
-            $("#card_header_" + id + " .btn")[0].innerHTML += (result === 3 ? "Banned" : "");
-        },
-        error: function(xhr) {
-            alert(xhr.status + " " + xhr.statusText);
-        }
-    });
-}
-</script>
 {% end %}

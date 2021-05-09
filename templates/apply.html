@@ -32,7 +32,7 @@
 
         <div class="form_field_item">
 
-            <div class="adapt-form__text-label">{{ field.get('name') }}{{ required_star }}</div>
+            <div class="adapt-form__text-label">{{ field.get('name') }}<font color="#FF0000">{{ required_star }}</font></div>
             {% if field.get('description') and field['type'] != 'text' %}
                 <p class="mdc-typography--caption">{% raw field.get('description') %}</p>
             {% end %}
@@ -176,7 +176,7 @@
                 <br>
                 在等候的过程中，你可以：
                 <ul style="padding-left: 20px;">
-                    <li>阅读<a href="https://wiki.imyvm.com/">竹萌 wiki</a></li>
+                    <li>阅读<a href="https://wiki.imyvm.org/">竹萌 wiki</a></li>
                     <li>申请加入 QQ 群：170988020</li>
                     <li>加入竹萌 Discord：<a href="https://discord.gg/GR68dwg">GR68dwg</a></li>
                 </ul>

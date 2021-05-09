@@ -24,7 +24,7 @@ class Player(Model):
     manage_exp = fields.BooleanField()  # 是否有管理经验
     referrer_person = fields.CharField(max_length=32, null=True)  # 推荐人
     referrer_web = fields.CharField(max_length=32)  # "你从哪里得知竹萌服务器的？"
-    praise_post = fields.BooleanField()  # 是否顶帖
+    # praise_post = fields.BooleanField()  # 是否顶帖
     passed = fields.IntField(default=0, index=True)  # 审核状态：0 待审核，1 通过，2 未通过
 
 

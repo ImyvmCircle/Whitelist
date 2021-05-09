@@ -2,6 +2,8 @@ from handlers.apply import ApplyHandle
 from handlers.auth import RegisterHandler, LoginHandler
 from handlers.review import ReviewPageHandle, ReviewResultHandle
 from handlers.passed import PassedPageHandle, PassedResultHandle
+from handlers.banned import BannedPageHandle
+from handlers.refused import RefusedPageHandle
 from tornado.web import StaticFileHandler
 
 import settings
@@ -19,6 +21,8 @@ url_patterns = (
     (URL_ROOT + r"/passed", PassedPageHandle),
     (URL_ROOT + r"/passed/set_result", PassedResultHandle),
     # (URL_ROOT + r"/review/render/(\d+)", ReviewPieceHandle),
+    (URL_ROOT + r"/refused", RefusedPageHandle),
+    (URL_ROOT + r"/banned", BannedPageHandle),
     (URL_ROOT + r"/", ApplyHandle),
     (URL_ROOT + r"/static/(.*)", StaticFileHandler, {'path': settings.tornado_settings['static_path']})
 )

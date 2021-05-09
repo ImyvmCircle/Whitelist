@@ -15,7 +15,7 @@ logger = logging.getLogger('whitelist.' + __name__)
 
 
 class ReviewPageHandle(BaseHandler):
-    # @require_login
+    @require_login
     async def get(self):
         players = await Player.filter(passed=0)
         await self.render("review.html", players=players, handler=self)
@@ -37,7 +37,8 @@ class ReviewResultHandle(BaseHandler):
             mailserver = mail.mailSender(smtp_settings['mail_host'], smtp_settings['mail_user'], smtp_settings['mail_pass'])
             title = "IMYVM 竹萌 白名单申请成功通知"
             message = pass_reply.replace('minecraft_id', player.minecraft_id)
-            msg = MIMEText(message, 'plain', 'utf-8')
+            # msg = MIMEText(message, 'plain', 'utf-8')
+            msg = MIMEText(message, 'html')
             mailserver.sendmail(player.email, msg, title, player.minecraft_id)
         elif result==2:
             cmd = "screen -S BC -p 0 -X stuff \"buc whitelist remove "+ player.minecraft_id+"\\r\""

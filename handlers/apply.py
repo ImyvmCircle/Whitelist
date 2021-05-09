@@ -32,10 +32,11 @@ class ApplyHandle(BaseHandler):
         meta_data = [
             {
                 "key": "minecraft_id",
-                "name": "您的正版 Minecraft ID",
+                "name": "您的正版 Minecraft ID", #您的正版 Minecraft Name
                 "type": "text",
                 "required": True,
-                "message": "请输入您的 Minecraft ID"
+                "message": "请输入您的 Minecraft ID", # 请输入您的 Minecraft Name 
+                "description": "即游戏内显示昵称"
             },
             {
                 "key": "email",
@@ -86,16 +87,16 @@ class ApplyHandle(BaseHandler):
                 "key": "things_todo",
                 "name": "来竹萌希望体验的内容或想做的事情？",
                 "options": [
-                    "原汁原味的生存功能",
-                    "更丰富的有现实代入感的生存",
-                    "成为一名竹萌生存建筑师",
-                    "建立自己的村庄",
-                    "玩转红石机械",
-                    "聊天吹水，交交朋友",
-                    "创造世界开开脑洞",
-                    "竹萌独创的各种小游戏",
-                    "空岛生存",
-                    "录制视频或直播"
+                    "原版生存",
+                    "插件生存",
+                    "成为建筑师",
+                    "成立村庄",
+                    "加入村庄",
+                    "玩转红石",
+                    "聊天吹水",
+                    "创造世界",
+                    "体验独创游戏",
+                    "拍摄视频"
                 ],
                 "has_other": True,
                 "type": "multiselect",
@@ -105,8 +106,9 @@ class ApplyHandle(BaseHandler):
                 "key": "minecraft_join_time",
                 "name": "接触 Minecraft 的时间",
                 "type": "text",
-                "validate": r"^20\d{2}-(0|1)?\d$",
-                "placeholder": "YYYY-MM",
+                # "validate": r"^20\d{2}-(0|1)?\d$",
+                "validate": r"^20\d{2}-((0([1-9]))|(1(0|1|2)))$",
+                "placeholder": "2020-08", #如 2016-03
                 "required": True
             },
             {
@@ -174,22 +176,25 @@ class ApplyHandle(BaseHandler):
                 "name": "你从哪里得知竹萌服务器的？",
                 "options": [
                     "Bilibili",
-                    "MCBBS",
+                    # "MCBBS",
                     "Youtube",
-                    "搜索引擎"
+                    "MCMOD",
+                    "竹萌主页",
+                    "搜索引擎",
+                    "其他"
                 ],
                 "type": "radio",
                 "required": True,
                 "has_other": True
             },
-            {
-                "key": "praise_post",
-                "name": "是否顶帖",
-                "description": "喜欢的话请帮助点赞顶帖哦 >>> <a href=\"http://www.mcbbs.net/thread-730815-1-1.html\">http://www.mcbbs.net/thread-730815-1-1.html</a> <<<",
-                "type": "radio",
-                "options": ["是", "否"],
-                "required": True
-            },
+            # {
+            #     "key": "praise_post",
+            #     "name": "是否顶帖",
+            #     "description": "喜欢的话请帮助点赞顶帖哦 >>> <a href=\"http://www.mcbbs.net/thread-730815-1-1.html\">http://www.mcbbs.net/thread-730815-1-1.html</a> <<<",
+            #     "type": "radio",
+            #     "options": ["是", "否"],
+            #     "required": True
+            # },
             {
                 "key": "send_copy",
                 "name": "是否发送该申请表的副本给你的邮箱？",

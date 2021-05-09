@@ -15,7 +15,7 @@ logger = logging.getLogger('whitelist.' + __name__)
 
 
 class PassedPageHandle(BaseHandler):
-    # @require_login
+    @require_login
     async def get(self):
         players = await Player.filter(passed=1)
         await self.render("passed.html", players=players, handler=self)
