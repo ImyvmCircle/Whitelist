@@ -5,8 +5,8 @@ import pyotp
 
 class Player(Model):
     id = fields.IntField(pk=True)
-    minecraft_id = fields.CharField(max_length=32, unique=True, index=True)  # Minecraft ID
-    email = fields.CharField(max_length=128, unique=True)  # Email
+    minecraft_id = fields.CharField(max_length=32, index=True)  # Minecraft ID
+    minecraft_uuid = fields.CharField(max_length=32, unique=True, index=True)  # Minecraft UUID    email = fields.CharField(max_length=128, unique=True)  # Email
     apply_time = fields.IntField(default=lambda: int(time.time()))  # 申请时间
     join_time = fields.IntField(default=0)  # 加入（竹萌）时间
     nickname = fields.CharField(max_length=64, null=True)  # 称呼

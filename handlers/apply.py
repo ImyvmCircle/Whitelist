@@ -1,4 +1,5 @@
 import datetime
+from handlers.utils import request
 import json
 import logging
 import re
@@ -206,8 +207,9 @@ class ApplyHandle(BaseHandler):
 
     async def post(self):
         token = self.get_argument('token')
-        if not (await verify_recaptcha(token, "apply", self.request.remote_ip)):
+        if not (await verify_recaptcha(token, self.request.remote_ip)):
             self.write("Invalid request")
+            return
 
         raw_data = json.loads(self.get_argument('data'))
         data = {}
@@ -223,6 +225,10 @@ class ApplyHandle(BaseHandler):
                 assert field['value'] in ["是", "否"]
                 data[field['name']] = field['value'] == "是"
 
+        username = data['minecraft_id']
+        resp = await request.get(f'https://api.mojang.com/users/profiles/minecraft/{username}')
+        uuid = resp['id']
+
         try:
             send_copy = data['send_copy']
             data['minecraft_join_time'] = parse_year_month(data['minecraft_join_time'])
@@ -234,7 +240,7 @@ class ApplyHandle(BaseHandler):
             return
 
         try:
-            player = await Player.create(**data)
+            player = await Player.create(**data, minecraft_uuid=uuid)
         except tortoise.exceptions.IntegrityError as e:
             if e.args[0].args[0] == 1048:
                 # some column cannot be null
