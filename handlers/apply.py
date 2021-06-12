@@ -6,7 +6,7 @@ import tornado.httpclient
 import tortoise
 
 from handlers.base import BaseHandler
-from handlers.utils.recaptcha import verify_recaptcha_with_dynamic_score
+from handlers.utils.recaptcha import verify_recaptcha
 from orm.models import Player
 from settings import smtp_settings
 from email.mime.multipart import MIMEMultipart
@@ -206,7 +206,7 @@ class ApplyHandle(BaseHandler):
 
     async def post(self):
         token = self.get_argument('token')
-        if not (await verify_recaptcha_with_dynamic_score(token, "apply", self.request.remote_ip)):
+        if not (await verify_recaptcha(token, "apply", self.request.remote_ip)):
             self.write("Invalid request")
 
         raw_data = json.loads(self.get_argument('data'))

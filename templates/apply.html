@@ -155,6 +155,8 @@
 
         {% end %}
 
+        <div class="g-recaptcha" data-sitekey="6LexhyobAAAAANH8SrRYERJFFDBF17I9dWfz7w5E" data-callback="onRecaptchaSuccess"></div>
+
         <div>
             <button type="submit" class="mdc-button mdc-button--raised mdc-button__label mdc-ripple-upgraded submit_button">提交</button>
         </div>
@@ -187,7 +189,7 @@
 {% end %}
 
 {% block script %}
-<script src="https://www.recaptcha.net/recaptcha/api.js?render=6Lc1ka0UAAAAALRAI8eVDUnnaEUptaLftx_xCg5A"></script>
+<script src="https://www.recaptcha.net/recaptcha/api.js" async defer></script>
 
 <script>
 document.querySelectorAll(".mdc-text-field-helper-text").forEach(function(elem) {
@@ -199,6 +201,7 @@ document.querySelectorAll(".mdc-text-field-helper-text").forEach(function(elem) 
     // dialog.open();
 
     var multiple_set_count = {};
+    var token = null;
 
     $("input[type='checkbox']").filter(function(index, elem) {
         return elem.name.startsWith("multicheckbox-");
@@ -288,31 +291,37 @@ document.querySelectorAll(".mdc-text-field-helper-text").forEach(function(elem) 
         event.preventDefault();
         var formdata = JSON.stringify(deal_multiple_select($(this).serializeArray()));
 
-        grecaptcha.execute('6Lc1ka0UAAAAALRAI8eVDUnnaEUptaLftx_xCg5A', { action: 'apply' }).then(function(token) {
-            $.ajax({
-                url: "/",
-                type: "POST",
-                data: {
-                    data: formdata,
-                    _xsrf: getCookie("_xsrf"),
-                    token: token
-                },
-                success: function (data) {
-                    // $("button[type='submit']").removeAttr("disabled");
-                    console.log(data);
-                    if (data === "请不要提交两次哟") {
-                        alert('你已经提交过一次了，请耐心等待审核！');
-                    }
-                    if (data === "Success") {
-                        dialog.open();
-                    }
-                },
-                error: function () {
-                    // $("button[type='submit']").removeAttr("disabled");
+        if (token === null) {
+            return;
+        }
+
+        $.ajax({
+            url: "/",
+            type: "POST",
+            data: {
+                data: formdata,
+                _xsrf: getCookie("_xsrf"),
+                token: token
+            },
+            success: function (data) {
+                // $("button[type='submit']").removeAttr("disabled");
+                console.log(data);
+                if (data === "请不要提交两次哟") {
+                    alert('你已经提交过一次了，请耐心等待审核！');
                 }
-            });
+                if (data === "Success") {
+                    dialog.open();
+                }
+            },
+            error: function () {
+                // $("button[type='submit']").removeAttr("disabled");
+            }
         });
     });
+
+    window.onRecaptchaSuccess = function(response) {
+        token = response;
+    };
 })();
 </script>
 {% end %}
