@@ -26,8 +26,6 @@ def parse_year_month(date):
 
 
 class ApplyHandle(BaseHandler):
-    http_client = tornado.httpclient.AsyncHTTPClient()
-
     async def get(self):
         meta_data = [
             {
