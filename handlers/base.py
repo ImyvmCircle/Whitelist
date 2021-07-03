@@ -75,6 +75,10 @@ class BaseHandler(tornado.web.RequestHandler):
                     self.set_header('Content-Type', "application/json")
                 self.write(exception.log_message)
             self.finish()
+        elif 'reason' in kwargs:
+            self.finish("<html><title>{code}: {message}</title>"
+                        "<body>{code}: {message}</body></html>".format(
+                            code=status_code, message=kwargs['reason']))
         else:
             self.finish("<html><title>{code}: {message}</title>"
                         "<body>{code}: {message}</body></html>".format(

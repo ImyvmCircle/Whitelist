@@ -33,3 +33,4 @@ class User(Model):
     name = fields.CharField(max_length=64, unique=True, index=True)
     password = fields.CharField(max_length=128)
     seed_2fa = fields.CharField(max_length=20, default=pyotp.random_base32)
+    is_admin = fields.BooleanField()  # admin 可以新建账号

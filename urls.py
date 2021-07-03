@@ -1,5 +1,5 @@
 from handlers.apply import ApplyHandle
-from handlers.auth import RegisterHandler, LoginHandler
+from handlers.auth import RegisterHandler, LoginHandler, CreateUserHandler, PasswordChangeHandler
 from handlers.review import ReviewPageHandle, ReviewResultHandle
 from handlers.passed import PassedPageHandle, PassedResultHandle
 from handlers.banned import BannedPageHandle
@@ -14,6 +14,8 @@ API_ROOT = URL_ROOT + r"/api"
 
 url_patterns = (
     (API_ROOT + r"/auth/register", RegisterHandler),
+    (URL_ROOT + r"/new_user", CreateUserHandler),
+    (URL_ROOT + r"/change_pw", PasswordChangeHandler),
     (URL_ROOT + r"/login", LoginHandler),
     (URL_ROOT + r"/review", ReviewPageHandle),
     (URL_ROOT + r"/review", ReviewPageHandle),

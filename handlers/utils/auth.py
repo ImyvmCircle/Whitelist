@@ -9,7 +9,7 @@ from typing import Optional, Union, Dict
 import handlers.base
 from orm import User
 from settings import secret_tokens, session_max_age
-from handlers.utils import APILoginNeeded
+from handlers.utils import APILoginNeeded, APIPermissionError
 
 
 class SessionStorage:
@@ -84,3 +84,20 @@ def require_login(func):
             await func(self, *args, **kwargs)
 
     return login_checker
+
+
+def require_admin(func):
+    @functools.wraps(func)
+    async def checker(self, *args, **kwargs):
+        user = get_session_user(self)
+        is_admin = user is not None and bool(user.is_admin)
+
+        if not is_admin:
+            if "text/html" in self.request.headers.get('Accept', ""):
+                self.write_error(403, reason='Access denied')
+            else:
+                raise APIPermissionError("You must be admin to view this page")
+        else:
+            await func(self, *args, **kwargs)
+
+    return checker
