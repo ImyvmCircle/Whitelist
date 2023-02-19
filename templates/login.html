@@ -24,7 +24,7 @@
     <form id="login_form">
         <div class="adapt-form__text-label">用户名</div>
         <div class="mdc-text-field mdc-text-field--outlined">
-            <input type="text" name="username" required class="mdc-text-field__input" autocomplete="username">
+            <input type="text" id="username" name="username" required class="mdc-text-field__input" autocomplete="username">
             <div class="mdc-notched-outline">
                 <div class="mdc-notched-outline__leading"></div>
                 <div class="mdc-notched-outline__notch">
@@ -51,20 +51,21 @@
         <div class="mdc-text-field-helper-line">
             <div id="password-helper-text" class="mdc-text-field-helper-text" aria-hidden="true"></div>
         </div>
-
-        <div class="adapt-form__text-label">两步验证码</div>
-        <div class="mdc-text-field mdc-text-field--outlined">
-            <input type="text" name="otp" required pattern="^\d{6}$" class="mdc-text-field__input" autocomplete="one-time-code">
-            <div class="mdc-notched-outline">
-                <div class="mdc-notched-outline__leading"></div>
-                <div class="mdc-notched-outline__notch">
-                    <label class="mdc-floating-label">Two factor code</label>
+        <div id="2fa">
+            <div class="adapt-form__text-label">两步验证码</div>
+            <div class="mdc-text-field mdc-text-field--outlined">
+                <input type="text" name="otp" id="otp" required pattern="^\d{6}$" class="mdc-text-field__input" autocomplete="one-time-code">
+                <div class="mdc-notched-outline">
+                    <div class="mdc-notched-outline__leading"></div>
+                    <div class="mdc-notched-outline__notch">
+                        <label class="mdc-floating-label">Two factor code</label>
+                    </div>
+                    <div class="mdc-notched-outline__trailing"></div>
                 </div>
-                <div class="mdc-notched-outline__trailing"></div>
             </div>
-        </div>
-        <div class="mdc-text-field-helper-line">
-            <div id="otp-helper-text" class="mdc-text-field-helper-text" aria-hidden="true"></div>
+            <div class="mdc-text-field-helper-line">
+                <div id="otp-helper-text" class="mdc-text-field-helper-text" aria-hidden="true"></div>
+            </div>
         </div>
 
         <div>
@@ -128,5 +129,37 @@ var helper_texts;
         });
     });
 })();
+$('#username').on('input propertychange', function(e){
+    var name = document.getElementById("username").value;
+    $.ajax({
+            url: "/check2fa",
+            type: "POST",
+            data: {
+                username: name,
+                _xsrf: getCookie("_xsrf")
+            },
+            headers: {
+                Accept: "application/json; charset=utf-8"
+            },
+            success: function (data) {
+                // $("button[type='submit']").removeAttr("disabled");
+                console.log(data);
+                if (data.message === true) {
+                    var t = document.getElementById('2fa');//选取id为test的div元素
+                    t.style.display = 'none';// 隐藏选择的元素
+                    document.getElementById('otp').value = "000000"
+                    console.log("Success")
+                }else{
+                    var t = document.getElementById('2fa');//选取id为test的div元素
+                    t.style.display = 'block';// 隐藏选择的元素
+                    document.getElementById('otp').value = ""
+                    console.log("Success")
+                }
+            },
+            error: function () {
+                // $("button[type='submit']").removeAttr("disabled");
+            }
+        });
+});
 </script>
 {% end %}

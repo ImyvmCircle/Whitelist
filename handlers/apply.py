@@ -4,6 +4,7 @@ import logging
 import re
 import tornado.httpclient
 import tortoise
+import tortoise.exceptions
 
 from handlers.base import BaseHandler
 from handlers.utils.recaptcha import verify_recaptcha
@@ -11,6 +12,7 @@ from orm.models import Player
 from settings import smtp_settings
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from handlers.utils import  APIError
 
 import handlers.mail as mail
 
@@ -46,32 +48,17 @@ class ApplyHandle(BaseHandler):
                 "message": "请输入您的邮箱"
             },
             {
+                "key": "QQ",
+                "name": "您的QQ号",
+                "description": "QQ主页是我们审核的依据之一",
+                "type": "text",
+                "required": True,
+                "message": "请输入您的QQ号"
+            },
+            {
                 "key": "nickname",
                 "name": "昵称",
                 "description": "希望大家如何称呼您",
-                "type": "text"
-            },
-            {
-                "key": "introduction",
-                "name": "一句话介绍你自己",
-                "description": "如您通过审核此项将显示给其他玩家",
-                "type": "text"
-            },
-            {
-                "key": "gender",
-                "name": "性别",
-                "options": [
-                    "男",
-                    "女",
-                    "保密"
-                ],
-                "type": "radio",
-                "required": True
-            },
-            {
-                "key": "motto",
-                "name": "座右铭",
-                "description": "如您通过审核此项将显示给其他玩家",
                 "type": "text"
             },
             {
@@ -82,33 +69,62 @@ class ApplyHandle(BaseHandler):
                 "required": True
             },
             {
-                "key": "things_todo",
-                "name": "来竹萌希望体验的内容或想做的事情？",
+                "key": "gender",
+                "name": "性别",
                 "options": [
-                    "原版生存",
-                    "插件生存",
-                    "成为建筑师",
-                    "成立村庄",
-                    "加入村庄",
-                    "玩转红石",
-                    "聊天吹水",
-                    "创造世界",
-                    "体验独创游戏",
-                    "拍摄视频"
+                    "男",
+                    "女",
+                    "保密/自认非二元"
                 ],
-                "has_other": True,
-                "type": "multiselect",
+                "type": "radio",
                 "required": True
             },
             {
-                "key": "minecraft_join_time",
-                "name": "接触 Minecraft 的时间",
-                "type": "text",
-                # "validate": r"^20\d{2}-(0|1)?\d$",
-                "validate": r"^20\d{2}-((0([1-9]))|(1(0|1|2)))$",
-                "placeholder": "2020-08", #如 2016-03
-                "required": True
+                "key": "introduction",
+                "name": "介绍你自己",
+                "description": "以下文字部分自由发挥，可详尽充实，可简明扼要，尽可能逻辑清楚，条理清晰，跟我们一起分享你的回忆",
+                "type": "textarea"
             },
+            {
+                "key": "works",
+                "name": "你的作品",
+                "description": "以下文字部分自由发挥，可详尽充实，可简明扼要，尽可能逻辑清楚，条理清晰，跟我们一起分享你的回忆",
+                "type": "textarea"
+            },
+            # {
+            #     "key": "motto",
+            #     "name": "座右铭",
+            #     "description": "如您通过审核此项将显示给其他玩家",
+            #     "type": "text"
+            # },
+            # {
+            #     "key": "things_todo",
+            #     "name": "来竹萌希望体验的内容或想做的事情？",
+            #     "options": [
+            #         "原版生存",
+            #         "插件生存",
+            #         "成为建筑师",
+            #         "成立村庄",
+            #         "加入村庄",
+            #         "玩转红石",
+            #         "聊天吹水",
+            #         "创造世界",
+            #         "体验独创游戏",
+            #         "拍摄视频"
+            #     ],
+            #     "has_other": True,
+            #     "type": "multiselect",
+            #     "required": True
+            # },
+            # {
+            #     "key": "minecraft_join_time",
+            #     "name": "接触 Minecraft 的时间",
+            #     "type": "text",
+            #     # "validate": r"^20\d{2}-(0|1)?\d$",
+            #     "validate": r"^20\d{2}-((0([1-9]))|(1(0|1|2)))$",
+            #     "placeholder": "2020-08", #如 2016-03
+            #     "required": True
+            # },
             {
                 "key": "good_at",
                 "name": "擅长的事情？",
@@ -128,42 +144,42 @@ class ApplyHandle(BaseHandler):
                 "type": "multiselect",
                 "required": True
             },
-            {
-                "key": "resident",
-                "name": "是否愿意常驻竹萌？",
-                "type": "radio",
-                "options": ["是", "否"],
-                "required": True
-            },
-            {
-                "key": "want_donate",
-                "name": "是否有能力或愿意捐赠服务器？",
-                "type": "radio",
-                "options": ["是", "否"],
-                "required": True
-            },
-            {
-                "key": "apply_more",
-                "name": "是否同时在申请其他服务器白名单？",
-                "type": "radio",
-                "options": ["是", "否"],
-                "required": True
-            },
-            {
-                "key": "is_bad",
-                "name": "是否有被封禁的经历？",
-                "description": "该题不影响白名单审核",
-                "type": "radio",
-                "options": ["是", "否"],
-                "required": True
-            },
-            {
-                "key": "manage_exp",
-                "name": "是否有其他服务器管理经验？",
-                "type": "radio",
-                "options": ["是", "否"],
-                "required": True
-            },
+            # {
+            #     "key": "resident",
+            #     "name": "是否愿意常驻竹萌？",
+            #     "type": "radio",
+            #     "options": ["是", "否"],
+            #     "required": True
+            # },
+            # {
+            #     "key": "want_donate",
+            #     "name": "是否有能力或愿意捐赠服务器？",
+            #     "type": "radio",
+            #     "options": ["是", "否"],
+            #     "required": True
+            # },
+            # {
+            #     "key": "apply_more",
+            #     "name": "是否同时在申请其他服务器白名单？",
+            #     "type": "radio",
+            #     "options": ["是", "否"],
+            #     "required": True
+            # },
+            # {
+            #     "key": "is_bad",
+            #     "name": "是否有被封禁的经历？",
+            #     "description": "该题不影响白名单审核",
+            #     "type": "radio",
+            #     "options": ["是", "否"],
+            #     "required": True
+            # },
+            # {
+            #     "key": "manage_exp",
+            #     "name": "是否有其他服务器管理经验？",
+            #     "type": "radio",
+            #     "options": ["是", "否"],
+            #     "required": True
+            # },
             {
                 "key": "referrer_person",
                 "name": "推荐人",
@@ -185,6 +201,12 @@ class ApplyHandle(BaseHandler):
                 "required": True,
                 "has_other": True
             },
+            {
+                "key": "other",
+                "name": "补充",
+                "description": "以下文字部分自由发挥，用于补充你自己",
+                "type": "textarea"
+            },
             # {
             #     "key": "praise_post",
             #     "name": "是否顶帖",
@@ -192,6 +214,11 @@ class ApplyHandle(BaseHandler):
             #     "type": "radio",
             #     "options": ["是", "否"],
             #     "required": True
+            # },
+            # {
+            #     "key":"annex",
+            #     "name":"上传附件",
+            #     "type":"annex",
             # },
             {
                 "key": "send_copy",
@@ -218,14 +245,13 @@ class ApplyHandle(BaseHandler):
             assert isinstance(field['value'], str)
             assert isinstance(field['name'], str)
             data[field['name']] = field['value']
-            if field['name'] in ["resident", "want_donate", "apply_more", "is_bad", "manage_exp", "praise_post"]:
-                # logger.debug(f"{field['name']} ")
-                assert field['value'] in ["是", "否"]
-                data[field['name']] = field['value'] == "是"
+            # if field['name'] in ["resident", "want_donate", "apply_more", "is_bad", "manage_exp", "praise_post"]:
+            #     # logger.debug(f"{field['name']} ")
+            #     assert field['value'] in ["是", "否"]
+            #     data[field['name']] = field['value'] == "是"
 
         try:
             send_copy = data['send_copy']
-            data['minecraft_join_time'] = parse_year_month(data['minecraft_join_time'])
             data['birth_year'] = datetime.datetime.now().year - int(data['age'])
             del data['send_copy']
             del data['age']
@@ -256,3 +282,13 @@ class ApplyHandle(BaseHandler):
             file1["Content-Disposition"] = 'attachment; filename="apply.json"'
             msg.attach(file1)
             mailserver.sendmail(player.email, msg, title, player.minecraft_id)
+class CheckReapply(BaseHandler):
+    async def post(self):
+        minecraftid =self.get_json_argument('minecraftid')
+        try:
+            player = await Player.get(minecraft_id=minecraftid)
+        except:
+            self.write("Error")
+        passed = player.passed
+        if passed == 2:
+            await player.delete()

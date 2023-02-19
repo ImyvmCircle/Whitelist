@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Manager User{% end %}
+
+{% block stylesheet %}
+<style>
+.cardContainer {
+    border-radius: 8px;
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 40px;
+}
+
+.submit_button {
+    margin-top: 32px;
+}
+</style>
+{% end %}
+
+{% block content %}
+<div class="cardContainer mdc-elevation--z5">
+    <h2>账户管理</h2>
+    <div class="adapt-form__text-label">是否开启两步验证码（IP地址变更后仍会要求输入两步验证码，请勿删除你的身份验证器）</div>
+    <button id="basic-switch" class="{{ selected }}" type="button" role="switch" aria-checked="{{ flag }}">
+      <div class="mdc-switch__track"></div>
+      <div class="mdc-switch__handle-track">
+        <div class="mdc-switch__handle">
+          <div class="mdc-switch__shadow">
+            <div class="mdc-elevation-overlay"></div>
+          </div>
+          <div class="mdc-switch__ripple"></div>
+          <div class="mdc-switch__icons">
+            <svg class="mdc-switch__icon mdc-switch__icon--on" viewBox="0 0 24 24">
+              <path d="M19.69,5.23L8.96,15.96l-4.23-4.23L2.96,13.5l6,6L21.46,7L19.69,5.23z" />
+            </svg>
+            <svg class="mdc-switch__icon mdc-switch__icon--off" viewBox="0 0 24 24">
+              <path d="M20 13H4v-2h16v2z" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      <span class="mdc-switch__focus-ring-wrapper">
+        <div class="mdc-switch__focus-ring"></div>
+      </span>
+    </button>
+    <label for="basic-switch">禁用/启用</label>
+    <h2>修改密码</h2>
+    <form id="login_form">
+      <div class="adapt-form__text-label">旧密码</div>
+      <div class="mdc-text-field mdc-text-field--outlined">
+          <input type="password" name="old_password" required class="mdc-text-field__input" autocomplete="current-password">
+          <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                  <label class="mdc-floating-label">Old Password</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+          </div>
+      </div>
+      <div class="mdc-text-field-helper-line">
+          <div id="old-password-helper-text" class="mdc-text-field-helper-text" aria-hidden="true"></div>
+      </div>
+
+      <div class="adapt-form__text-label">新密码</div>
+      <div class="mdc-text-field mdc-text-field--outlined">
+          <input type="password" name="new_password" required class="mdc-text-field__input" autocomplete="new-password">
+          <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                  <label class="mdc-floating-label">New Password</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+          </div>
+      </div>
+      <div class="mdc-text-field-helper-line">
+          <div id="new-password-helper-text" class="mdc-text-field-helper-text" aria-hidden="true"></div>
+      </div>
+
+      <div class="adapt-form__text-label">两步验证码</div>
+      <div class="mdc-text-field mdc-text-field--outlined">
+          <input type="text" name="otp" required pattern="^\d{6}$" class="mdc-text-field__input" autocomplete="one-time-code">
+          <div class="mdc-notched-outline">
+              <div class="mdc-notched-outline__leading"></div>
+              <div class="mdc-notched-outline__notch">
+                  <label class="mdc-floating-label">Two factor code</label>
+              </div>
+              <div class="mdc-notched-outline__trailing"></div>
+          </div>
+      </div>
+      <div class="mdc-text-field-helper-line">
+          <div id="otp-helper-text" class="mdc-text-field-helper-text" aria-hidden="true"></div>
+      </div>
+
+      <div>
+          <button type="submit" class="mdc-button mdc-button--raised mdc-button__label mdc-ripple-upgraded submit_button">修改</button>
+      </div>
+  </form>
+</div>
+      
+</div>
+
+<div class="mdc-dialog"
+     role="alertdialog"
+     aria-modal="true"
+     aria-labelledby="修改成功">
+    <div class="mdc-dialog__container">
+        <div class="mdc-dialog__surface">
+            <h2 class="mdc-dialog__title">修改成功</h2>
+        </div>
+    </div>
+</div>
+{% end %}
+
+{% block script %}
+<script>
+$(document).ready(function(){
+    var helper_texts;
+    helper_switchs = {
+        switchs: new mdc.switchControl.MDCSwitch.attachTo(document.querySelector("#basic-switch")),
+        username: new mdc.textField.MDCTextFieldHelperText(document.querySelector("#username-helper-text")),
+        password: new mdc.textField.MDCTextFieldHelperText(document.querySelector("#password-helper-text")),
+        otp: new mdc.textField.MDCTextFieldHelperText(document.querySelector("#otp-helper-text"))
+    };
+    var enableotp = document.getElementById("basic-switch").ariaChecked
+  },)
+$("#basic-switch").click(function(event) {
+        event.preventDefault();
+        // $("button[type='submit']").attr("disabled", "disabled");
+        enableotp = document.getElementById("basic-switch").ariaChecked
+        $.ajax({
+            url: "/manager",
+            type: "POST",
+            data: {
+                enableotp: enableotp,
+                _xsrf: getCookie("_xsrf")
+            },
+            headers: {
+                Accept: "application/json; charset=utf-8"
+            },
+            success: function (data) {
+                // $("button[type='submit']").removeAttr("disabled");
+                console.log(data);
+                if (data.message === "Success") {
+                    alert('Success');
+                }
+            },
+            error: function () {
+                // $("button[type='submit']").removeAttr("disabled");
+            }
+        });
+    });
+(function() {
+    $("#login_form").submit(function(event) {
+        event.preventDefault();
+        // $("button[type='submit']").attr("disabled", "disabled");
+        var formdata = $(this).serializeArray();
+
+        var getField = function(name) {
+            for (var i=0; i<formdata.length; i++) {
+                if (formdata[i].name === name)
+                    return formdata[i].value;
+            }
+            return "";
+        };
+
+        $.ajax({
+            url: "/change_pw",
+            type: "POST",
+            data: {
+                old_password: getField("old_password"),
+                new_password: getField("new_password"),
+                otp: getField("otp"),
+                _xsrf: getCookie("_xsrf")
+            },
+            headers: {
+                Accept: "application/json; charset=utf-8"
+            },
+            success: function (data) {
+                // $("button[type='submit']").removeAttr("disabled");
+                console.log(data);
+                if (data.message === "Success") {
+                    alert('Success');
+                } else {
+                    // data = JSON.parse(data);
+                    var field = data.error.split(":")[1];
+                    helper_texts[field].foundation.setValidation(true);
+                    helper_texts[field].foundation.setContent(data.message);
+                    $("#" + field + "-helper-text").attr("role", "alert")
+                }
+            },
+            error: function () {
+                // $("button[type='submit']").removeAttr("disabled");
+            }
+        });
+    });
+})();
+</script>
+{% end %}

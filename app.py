@@ -41,3 +41,4 @@ if __name__ == "__main__":
         logger.info('Keyboard interrupt received, quiting...')
     finally:
         loop.run_until_complete(orm.close())
+        

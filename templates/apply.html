@@ -98,6 +98,28 @@
                         </div>
                     </div>
                 {% end %}
+            {% elif field['type'] == 'textarea' %}
+                <!-- Input field -->
+                  <label class="mdc-text-field mdc-text-field--outlined mdc-text-field--textarea mdc-text-field--with-internal-counter">
+                    <span class="mdc-notched-outline">
+                      <span class="mdc-notched-outline__leading"></span>
+                      <span class="mdc-notched-outline__notch">
+                        <span class="mdc-floating-label" id="my-label-id">{{ field.get('key').replace('_', ' ').upper() }}</span>
+                      </span>
+                      <span class="mdc-notched-outline__trailing"></span>
+                    </span>
+                    <span class="mdc-text-field__resizer">
+                        <textarea name="{{ field.get('key') }}"
+                        id="{{ field.get('key') }}-text-field" 
+                        class="mdc-text-field__input" 
+                        aria-labelledby="my-label-id"
+                        rows="8"
+                        cols="40" 
+                        maxlength="400"
+                        ></textarea>
+                      <span class="mdc-text-field-character-counter">0 / 140</span>
+                    </span>
+                  </label>
             {% elif field['type'] == 'multiselect' %}
                 <!-- Multi-select field -->
                 {% if is_required %}
@@ -172,10 +194,18 @@
         <div class="mdc-dialog__surface">
             <h2 class="mdc-dialog__title">提交成功</h2>
             <div class="mdc-dialog__content">
-                您的申请我们已经收到，请耐心等待审核，
+                您的申请我们已经收到，一般会在72小时内回复，
+                <br>
+                请耐心等待审核，
                 <br>
                 审核结果我们将会通过邮箱通知您。
                 <br>
+                如果长时间没有响应，可以检查您的垃圾箱。
+                <br>
+                或将whitelist@imyvm.com加入白名单。
+                <br>
+		如果是新创号或者刚改名，建议先进服务器让服务器认识一下你，避免加白名单时出现异常
+		<br>
                 在等候的过程中，你可以：
                 <ul style="padding-left: 20px;">
                     <li>阅读<a href="https://wiki.imyvm.org/">竹萌 wiki</a></li>
@@ -275,6 +305,14 @@ document.querySelectorAll(".mdc-text-field-helper-text").forEach(function(elem) 
             multiple_map[key] = multiple_map[key] || [];
             multiple_map[key].push(value);
         });
+        $("textarea").filter(function(index, elem) {
+            return elem.id.startsWith("otherinp-") && $(elem).attr("required") !== undefined;
+        }).each(function(index, elem) {
+            var key = elem.id.split("-")[1];
+            var value = elem.value;
+            multiple_map[key] = multiple_map[key] || [];
+            multiple_map[key].push(value);
+        });
 
         for (var key in multiple_map) {
             result.push({
@@ -323,5 +361,26 @@ document.querySelectorAll(".mdc-text-field-helper-text").forEach(function(elem) 
         token = response;
     };
 })();
+$('#minecraft_id-text-field').on('input propertychange', function(e){
+    var name = document.getElementById("minecraft_id-text-field").value;
+    $.ajax({
+            url: "/checkreapply",
+            type: "POST",
+            data: {
+                minecraftid: name,
+                _xsrf: getCookie("_xsrf")
+            },
+            headers: {
+                Accept: "application/json; charset=utf-8"
+            },
+            success: function (data) {
+                // $("button[type='submit']").removeAttr("disabled");
+                console.log("Success!");
+            },
+            error: function () {
+                // $("button[type='submit']").removeAttr("disabled");
+            }
+        });
+});
 </script>
 {% end %}

@@ -33,7 +33,7 @@ class PassedResultHandle(BaseHandler):
         player.passed = result
         await player.save()
         if reason:
-            cmd = "screen -S BC -p 0 -X stuff \"buc ban "+ player.minecraft_id+" "+reason+"\\r\""
+            cmd = "screen -S Velocity -p 0 -X stuff \"buc ban "+ player.minecraft_id+" "+reason+"\\r\""
         else:
-            cmd = "screen -S BC -p 0 -X stuff \"buc ban "+ player.minecraft_id+"\\r\""
+            cmd = "screen -S Velocity -p 0 -X stuff \"buc ban "+ player.minecraft_id+"\\r\""
         os.system(cmd)

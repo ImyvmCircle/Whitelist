@@ -111,6 +111,10 @@ button.danger.mdc-button {
                             <div class="two-row-right">{{ player.email }}</div>
                         </li>
                         <li class="mdc-list-item">
+                            <div class="two-row-left">QQ：</div>
+                            <div class="two-row-right">{{ player.QQ }}</div>
+                        </li>
+                        <li class="mdc-list-item">
                             <div class="two-row-left">申请时间：</div>
                             <div class="two-row-right">{{ datetime.datetime.fromtimestamp(player.apply_time).strftime("%Y-%m-%d %H:%M") }}</div>
                         </li>
@@ -123,30 +127,16 @@ button.danger.mdc-button {
                             <div class="two-row-right">{{ player.introduction or "无" }}</div>
                         </li>
                         <li class="mdc-list-item">
+                            <div class="two-row-left">作品：</div>
+                            <div class="two-row-right">{{ player.works or "无" }}</div>
+                        </li>
+                        <li class="mdc-list-item">
                             <div class="two-row-left">性别：</div>
                             <div class="two-row-right">{{ player.gender }}</div>
                         </li>
                         <li class="mdc-list-item">
-                            <div class="two-row-left">座右铭：</div>
-                            <div class="two-row-right">{{ player.motto or "无" }}</div>
-                        </li>
-                        <li class="mdc-list-item">
                             <div class="two-row-left">年龄：</div>
                             <div class="two-row-right">{{ datetime.datetime.now().year - player.birth_year }}</div>
-                        </li>
-                        <li class="mdc-list-item">
-                            <div class="two-row-left">接触 Minecraft 的时间：</div>
-                            <div class="two-row-right">{{ player.minecraft_join_time // 12 }}-{{ player.minecraft_join_time % 12 + 1 }}</div>
-                        </li>
-                        <li class="mdc-list-item">
-                            <div class="two-row-left">想做的事：</div>
-                            <div class="two-row-right">
-                                {% set things = player.things_todo.split(":;:") %}
-                                {{ things[0] }}
-                                {% for thing in things[1:] %}
-                                    <br>{{ thing }}
-                                {% end %}
-                            </div>
                         </li>
                         <li class="mdc-list-item">
                             <div class="two-row-left">擅长：</div>
@@ -159,62 +149,20 @@ button.danger.mdc-button {
                             </div>
                         </li>
                         <li class="mdc-list-item">
-                            <div class="two-row-left">是否常驻：</div>
-                            <div class="two-row-right">
-                                <div class="mdc-checkbox__background {{ 'force_enable' if player.resident else '' }}">
-                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mdc-list-item">
-                            <div class="two-row-left">是否愿意捐赠：</div>
-                            <div class="two-row-right">
-                                <div class="mdc-checkbox__background {{ 'force_enable' if player.want_donate else '' }}">
-                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mdc-list-item">
-                            <div class="two-row-left">是否在同时申请多个：</div>
-                            <div class="two-row-right">
-                                <div class="mdc-checkbox__background {{ 'force_enable' if player.apply_more else '' }}">
-                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mdc-list-item">
-                            <div class="two-row-left">是否曾经被 ban：</div>
-                            <div class="two-row-right">
-                                <div class="mdc-checkbox__background {{ 'force_enable' if player.is_bad else '' }}">
-                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mdc-list-item">
-                            <div class="two-row-left">是否有管理经验：</div>
-                            <div class="two-row-right">
-                                <div class="mdc-checkbox__background {{ 'force_enable' if player.manage_exp else '' }}">
-                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mdc-list-item">
                             <div class="two-row-left">推荐人：</div>
                             <div class="two-row-right">{{ player.referrer_person or "无" }}</div>
                         </li>
                         <li class="mdc-list-item">
                             <div class="two-row-left">得知竹萌的地方：</div>
                             <div class="two-row-right">{{ player.referrer_web }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">处理人：</div>
+                            <div class="two-row-right">竹萌管理组</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">补充：</div>
+                            <div class="two-row-right">{{ player.other or "无" }}</div>
                         </li>
                     </ul>
                 </div>

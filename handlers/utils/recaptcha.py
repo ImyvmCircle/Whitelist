@@ -11,7 +11,7 @@ last_clean_time = 0
 ip_request_count = defaultdict(int)
 
 
-async def verify_recaptcha(token: str, ip: str):
+async def verify_recaptcha(token: str, type: str, ip: str):
     verify_result = await request.post(
         "https://www.recaptcha.net/recaptcha/api/siteverify",
         urllib.parse.urlencode({

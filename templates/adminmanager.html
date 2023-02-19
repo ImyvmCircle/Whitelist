@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block title %}AdminManager User{% end %}
+
+{% block stylesheet %}
+<style>
+.cardContainer {
+    border-radius: 8px;
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 40px;
+}
+
+.submit_button {
+    margin-top: 32px;
+}
+
+.card-header {
+    padding: 0;
+}
+
+.card-header .btn {
+    padding: .75rem 1.25rem;
+}
+
+button.btn[data-toggle="collapse"] {
+    width: 100%;
+    text-align: left;
+    font-size: 16px;
+}
+
+.float-to-right {
+    float: right;
+}
+
+.float-to-right .content {
+    font-size: 18px;
+}
+
+.two-row-left {
+    align-self: stretch;
+    width: 30%;
+    text-align: right;
+    padding: 5px 8px 5px 0;
+}
+
+.two-row-right {
+    width: 100%;
+    padding: 5px 0 5px 0;
+    align-self: stretch;
+}
+
+.mdc-button {
+    height: 50px;
+    width: 60%;
+    margin-top: 6%;
+}
+
+.mdc-list-item {
+    height: auto;
+    min-height: 36px;
+}
+
+.force_enable {
+    background-color: var(--mdc-theme-primary, #6200ee);
+    border-color: var(--mdc-theme-primary, #6200ee);
+}
+
+.force_enable svg {
+    opacity: 1;
+}
+
+.force_enable path {
+    stroke-dashoffset: 1;
+}
+
+button.danger.mdc-button {
+    border-color: var(--red, red);
+    color: var(--red, red);
+}
+
+</style>
+{% end %}
+
+{% block content %}
+<div class="cardContainer mdc-elevation--z5">
+    <h2>管理员总账户管理</h2>
+    <h6>你可以在这里管理所有已有账户</h6>
+    <h6>所有账户</h6>
+    <div class="accordion" id="accordion">
+        {% for user in users %}
+        {% set header_id = 'card_header_' + str(user.id) %}
+        {% set content_id = 'card_content_' + str(user.id) %}
+
+        <div class="card">
+            <div class="card-header" id="{{ header_id }}">
+                <h2 class="mb-0">
+                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#{{ content_id }}">
+                        {{ user.name }}
+                    </button>
+                </h2>
+            </div>
+            <div id="{{ content_id }}" class="collapse" data-target="#{{ header_id }}" aria-expanded="false" aria-controls="{{ header_id }}">
+                <div class="card-body">
+                    <ul class="mdc-list mdc-list--non-interactive">
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">User ID：</div>
+                            <div class="two-row-right">{{ user.name }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">最近登陆IP：</div>
+                            <div class="two-row-right">{{ user.ip or "无" }}</div>
+                        </li>
+                        <li class="mdc-list-item">
+                            <div class="two-row-left">
+                                <button class="mdc-button mdc-button--outlined danger" onclick="del_user_result({{ user.id }})">
+                                    <span class="mdc-button__label">删除</span>
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% end %}
+    </div>
+    <h2>新建账号</h2>
+
+    <form id="login_form">
+        <div class="adapt-form__text-label">用户名</div>
+        <div class="mdc-text-field mdc-text-field--outlined">
+            <input type="text" name="username" required class="mdc-text-field__input" autocomplete="username">
+            <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                    <label class="mdc-floating-label">Username</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+            </div>
+        </div>
+        <div class="mdc-text-field-helper-line">
+            <div id="username-helper-text" class="mdc-text-field-helper-text" aria-hidden="true"></div>
+        </div>
+
+        <div class="adapt-form__text-label">密码</div>
+        <div class="mdc-text-field mdc-text-field--outlined">
+            <input type="password" name="password" required class="mdc-text-field__input" autocomplete="new-password">
+            <div class="mdc-notched-outline">
+                <div class="mdc-notched-outline__leading"></div>
+                <div class="mdc-notched-outline__notch">
+                    <label class="mdc-floating-label">Password</label>
+                </div>
+                <div class="mdc-notched-outline__trailing"></div>
+            </div>
+        </div>
+        <div class="mdc-text-field-helper-line">
+            <div id="password-helper-text" class="mdc-text-field-helper-text" aria-hidden="true"></div>
+        </div>
+
+        <div>
+            <button type="submit" class="mdc-button mdc-button--raised mdc-button__label mdc-ripple-upgraded submit_button">创建</button>
+        </div>
+    </form>
+      
+</div>
+
+<div class="mdc-dialog"
+     role="alertdialog"
+     aria-modal="true"
+     aria-labelledby="新建成功">
+    <div class="mdc-dialog__container">
+        <div class="mdc-dialog__surface">
+            <h2 class="mdc-dialog__title">新建成功</h2>
+            <div class="mdc-dialog__content">
+                2FA seed: <span id="seed"></span>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+
+{% block script %}
+<script>
+function del_user_result(id) {
+    $.ajax({
+        url: "/adminmanager/del_user",
+        type: "POST",
+        data: {
+            id: id,
+            _xsrf: getCookie("_xsrf")
+        },
+        success: function(resp) {
+            $("#card_content_" + id).collapse("hide");
+        },
+        error: function(xhr) {
+            alert(xhr.status + " " + xhr.statusText);
+        }
+    });
+}
+var helper_texts;
+(function() {
+    var dialog = new mdc.dialog.MDCDialog(document.querySelector(".mdc-dialog"));
+    helper_texts = {
+        username: new mdc.textField.MDCTextFieldHelperText(document.querySelector("#username-helper-text")),
+        password: new mdc.textField.MDCTextFieldHelperText(document.querySelector("#password-helper-text")),
+        password2: new mdc.textField.MDCTextFieldHelperText(document.querySelector("#password2-helper-text"))
+    };
+
+    $("#login_form").submit(function(event) {
+        event.preventDefault();
+        // $("button[type='submit']").attr("disabled", "disabled");
+        var formdata = $(this).serializeArray();
+
+        var getField = function(name) {
+            for (var i=0; i<formdata.length; i++) {
+                if (formdata[i].name === name)
+                    return formdata[i].value;
+            }
+            return "";
+        };
+
+        $.ajax({
+            url: "/new_user",
+            type: "POST",
+            data: {
+                username: getField("username"),
+                password: getField("password"),
+                _xsrf: getCookie("_xsrf")
+            },
+            headers: {
+                Accept: "application/json; charset=utf-8"
+            },
+            success: function (data) {
+                // $("button[type='submit']").removeAttr("disabled");
+                console.log(data);
+                if (data.message === "Success") {
+                    dialog.open();
+                    document.querySelector("#seed").innerText = data.seed;
+                } else {
+                    // data = JSON.parse(data);
+                    var field = data.error.split(":")[1];
+                    helper_texts[field].foundation.setValidation(true);
+                    helper_texts[field].foundation.setContent(data.message);
+                    $("#" + field + "-helper-text").attr("role", "alert")
+                }
+            },
+            error: function () {
+                // $("button[type='submit']").removeAttr("disabled");
+            }
+        });
+    });
+})();
+</script>   
+{% end %}

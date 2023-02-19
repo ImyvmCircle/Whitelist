@@ -12,3 +12,4 @@ nosetests.xml
 .env
 settings.py
 .vscode
+.venv

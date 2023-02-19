@@ -100,6 +100,10 @@ button.danger.mdc-button {
                             <div class="two-row-right">{{ player.email }}</div>
                         </li>
                         <li class="mdc-list-item">
+                            <div class="two-row-left">QQ号：</div>
+                            <div class="two-row-right">{{ player.QQ }}</div>
+                        </li>
+                        <li class="mdc-list-item">
                             <div class="two-row-left">申请时间：</div>
                             <div class="two-row-right">{{ datetime.datetime.fromtimestamp(player.apply_time).strftime("%Y-%m-%d %H:%M") }}</div>
                         </li>
@@ -108,34 +112,20 @@ button.danger.mdc-button {
                             <div class="two-row-right">{{ player.nickname or "无" }}</div>
                         </li>
                         <li class="mdc-list-item">
-                            <div class="two-row-left">介绍：</div>
-                            <div class="two-row-right">{{ player.introduction or "无" }}</div>
-                        </li>
-                        <li class="mdc-list-item">
                             <div class="two-row-left">性别：</div>
                             <div class="two-row-right">{{ player.gender }}</div>
-                        </li>
-                        <li class="mdc-list-item">
-                            <div class="two-row-left">座右铭：</div>
-                            <div class="two-row-right">{{ player.motto or "无" }}</div>
                         </li>
                         <li class="mdc-list-item">
                             <div class="two-row-left">年龄：</div>
                             <div class="two-row-right">{{ datetime.datetime.now().year - player.birth_year }}</div>
                         </li>
                         <li class="mdc-list-item">
-                            <div class="two-row-left">接触 Minecraft 的时间：</div>
-                            <div class="two-row-right">{{ player.minecraft_join_time // 12 }}-{{ player.minecraft_join_time % 12 + 1 }}</div>
+                            <div class="two-row-left">介绍：</div>
+                            <div class="two-row-right">{{ player.introduction or "无" }}</div>
                         </li>
                         <li class="mdc-list-item">
-                            <div class="two-row-left">想做的事：</div>
-                            <div class="two-row-right">
-                                {% set things = player.things_todo.split(":;:") %}
-                                {{ things[0] }}
-                                {% for thing in things[1:] %}
-                                    <br>{{ thing }}
-                                {% end %}
-                            </div>
+                            <div class="two-row-left">作品：</div>
+                            <div class="two-row-right">{{ player.works or "无" }}</div>
                         </li>
                         <li class="mdc-list-item">
                             <div class="two-row-left">擅长：</div>
@@ -148,56 +138,6 @@ button.danger.mdc-button {
                             </div>
                         </li>
                         <li class="mdc-list-item">
-                            <div class="two-row-left">是否常驻：</div>
-                            <div class="two-row-right">
-                                <div class="mdc-checkbox__background {{ 'force_enable' if player.resident else '' }}">
-                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mdc-list-item">
-                            <div class="two-row-left">是否愿意捐赠：</div>
-                            <div class="two-row-right">
-                                <div class="mdc-checkbox__background {{ 'force_enable' if player.want_donate else '' }}">
-                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mdc-list-item">
-                            <div class="two-row-left">是否在同时申请多个：</div>
-                            <div class="two-row-right">
-                                <div class="mdc-checkbox__background {{ 'force_enable' if player.apply_more else '' }}">
-                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mdc-list-item">
-                            <div class="two-row-left">是否曾经被 ban：</div>
-                            <div class="two-row-right">
-                                <div class="mdc-checkbox__background {{ 'force_enable' if player.is_bad else '' }}">
-                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mdc-list-item">
-                            <div class="two-row-left">是否有管理经验：</div>
-                            <div class="two-row-right">
-                                <div class="mdc-checkbox__background {{ 'force_enable' if player.manage_exp else '' }}">
-                                    <svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-                                        <path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"/>
-                                    </svg>
-                                </div>
-                            </div>
-                        </li>
-                        <li class="mdc-list-item">
                             <div class="two-row-left">推荐人：</div>
                             <div class="two-row-right">{{ player.referrer_person or "无" }}</div>
                         </li>
@@ -206,14 +146,47 @@ button.danger.mdc-button {
                             <div class="two-row-right">{{ player.referrer_web }}</div>
                         </li>
                         <li class="mdc-list-item">
+                            <div class="two-row-left">补充：</div>
+                            <div class="two-row-right">{{ player.other or "无" }}</div>
+                        </li>
+                        <li class="mdc-list-item">
                             <div class="two-row-left">
-                                <button class="mdc-button mdc-button--outlined danger" onclick="set_review_result({{ player.id }}, 2)">
-                                    <span class="mdc-button__label">Refuse</span>
+                                <button class="mdc-button mdc-button--outlined danger" onclick="set_review_result({{ player.id }}, 2)" 
+                                style="
+                                height: 56px;
+                                top: 8px;
+                            ">
+                                    <span class="mdc-button__label">Refused</span>
                                 </button>
+                            </div>
+                            <div class="two-row-right">
+                                <div class="mdc-text-field mdc-text-field--outlined adapt-form__input-field"
+                                style="
+                                width: 114%;
+                            ">
+                                    <input
+                                            type="text"
+                                            name="Refused reason"
+                                            id={{ player.id }}
+                                            class="mdc-text-field__input"
+                
+                                    >
+                                    <div class="mdc-notched-outline">
+                                      <div class="mdc-notched-outline__leading"></div>
+                                      <div class="mdc-notched-outline__notch">
+                                        <label class="mdc-floating-label">Refused reason</label>
+                                      </div>
+                                      <div class="mdc-notched-outline__trailing"></div>
+                                    </div>
+                                </div>
                             </div>
                             <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
                             <div class="two-row-right">
-                                <button class="mdc-button mdc-button--outlined" onclick="set_review_result({{ player.id }}, 1)">
+                                <button class="mdc-button mdc-button--outlined" onclick="set_review_result({{ player.id }}, 1)" 
+                                style="
+                                        height: 56px;
+                                        top: 8px;
+                                ">
                                     <span class="mdc-button__label">Accept</span>
                                 </button>
                             </div>
@@ -230,11 +203,13 @@ button.danger.mdc-button {
 {% block script %}
 <script>
 function set_review_result(id, result) {
+    var reason = document.getElementById(id).value;
     $.ajax({
         url: "/review/set_result",
         type: "POST",
         data: {
             id: id,
+            reason: reason,
             result: result,
             _xsrf: getCookie("_xsrf")
         },
