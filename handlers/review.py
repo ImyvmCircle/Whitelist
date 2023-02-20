@@ -5,6 +5,7 @@ import re
 
 from handlers.base import BaseHandler
 from handlers.utils import require_login
+from handlers.utils.error import APIError
 from orm.models import Player
 from settings import tornado_settings, smtp_settings, pass_reply, admin_email
 from email.mime.text import MIMEText
@@ -38,7 +39,7 @@ class ReviewResultHandle(BaseHandler):
             try:
                 output = str(os.popen("cat ~/screenlog.0|tail -n 3",'r').readlines())
             except:
-                self.write(dict(message="open log error!"))
+                raise APIError("review:log", 500, "open log error!")
             if re.search('Added\s[a-zA-Z0-9_-]+\s\(.*\)\sto\swhitelist',output)!=None:
                 player.passed = result
                 player.operator = username
@@ -51,9 +52,9 @@ class ReviewResultHandle(BaseHandler):
                 mailserver.sendmail(player.email, msg, title, player.minecraft_id)
                 message = player.minecraft_id+"的白名单申请已成功，现发此函以通知"+"<br>"+"操作人为："+player.operator
                 msg = MIMEText(message, "html")
-                mailserver.sendmail(admin_email['address'], msg, player.minecraft_id+"白名单申请失败通知", admin_email['name'])
+                mailserver.sendmail(admin_email['address'], msg, player.minecraft_id+"白名单申请成功通知", admin_email['name'])
             else:
-                self.write(dict(message="operate failed"))
+                raise APIError("review:add", 500, "operate failed")
         elif result==2:
             cmd = "screen -S Velocity -p 0 -X stuff \"buc whitelist remove "+ player.minecraft_id+"\\r\""
             os.system(cmd)
